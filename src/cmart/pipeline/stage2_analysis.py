@@ -26,7 +26,7 @@ Query: {query}\
 
 _DEFAULT_CLARIFICATION: dict[QCSignal, str] = {
     QCSignal.AMBIGUOUS: "Could you clarify what specifically you need help with?",
-    QCSignal.INCOMPLETE: "Could you provide more context, such as the product area or account type?",
+    QCSignal.INCOMPLETE: "Could you provide more context, such as the product area or version?",
 }
 
 
