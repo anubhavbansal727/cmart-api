@@ -18,8 +18,8 @@ from cmart.main import app
 from cmart.schemas.pipeline import (
     DecisionResult,
     PipelineContext,
-    RSSignal,
     RetrievalResult,
+    RSSignal,
 )
 
 # ---------------------------------------------------------------------------
