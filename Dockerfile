@@ -25,7 +25,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 RUN adduser --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-EXPOSE 8000
+EXPOSE 8080
 
-# PORT is injected by Railway; default to 8000 for local Docker runs
-CMD ["sh", "-c", "python -m uvicorn cmart.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# PORT is injected by Railway; default to 8080 for local Docker runs
+CMD ["sh", "-c", "python -m uvicorn cmart.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
