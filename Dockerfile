@@ -12,7 +12,7 @@ RUN uv sync --no-dev --no-install-project
 FROM deps AS builder
 
 COPY src/ ./src/
-RUN uv sync --no-dev
+RUN uv sync --no-dev --no-editable
 
 # Stage 3: minimal runtime image
 FROM python:3.12-slim AS runtime
