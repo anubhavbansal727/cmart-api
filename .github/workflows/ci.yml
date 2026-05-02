@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint (ruff + mypy)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run ruff
+        run: uv run ruff check .
+
+      - name: Run mypy
+        run: uv run mypy src/
+
+  test:
+    name: Tests (pytest)
+    runs-on: ubuntu-latest
+    needs: lint
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: cmart
+          POSTGRES_USER: cmart
+          POSTGRES_PASSWORD: cmart
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cmart -d cmart"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7.2-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql+asyncpg://cmart:cmart@localhost:5432/cmart
+      REDIS_URL: redis://localhost:6379/0
+      APP_ENV: development
+      LOG_LEVEL: INFO
+      API_HOST: 0.0.0.0
+      API_PORT: "8000"
+      GEMINI_API_KEY: test-gemini-key
+      OPENAI_API_KEY: test-openai-key
+      PINECONE_API_KEY: test-pinecone-key
+      PINECONE_INDEX_NAME: cmart-index
+      PINECONE_ENVIRONMENT: us-east-1-aws
+      RS_STRONG_THRESHOLD: "0.82"
+      RS_MODERATE_THRESHOLD: "0.65"
+      SESSION_TTL_SECONDS: "1800"
+      MAX_CLARIFY_ROUNDS: "2"
+      RATE_LIMIT_PER_MINUTE: "100"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run pytest
+        run: uv run pytest tests/ -v --tb=short
