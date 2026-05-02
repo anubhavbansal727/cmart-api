@@ -3,6 +3,8 @@ from __future__ import annotations
 import asyncio
 import time
 
+import structlog
+
 from cmart.schemas.pipeline import (
     AgreementResult,
     GCSignal,
@@ -72,9 +74,15 @@ async def run(ctx: PipelineContext) -> PipelineContext:
         AgreementResult,
     )
 
+    logger = structlog.get_logger()
     gc_raw, sa_raw = await asyncio.gather(gc_task, sa_task, return_exceptions=True)
 
     # Individual failures → safe defaults that will force ESCALATE in decision engine
+    if not isinstance(gc_raw, GroundingResult):
+        logger.error("stage5.gc_failed", error=repr(gc_raw))
+    if not isinstance(sa_raw, AgreementResult):
+        logger.error("stage5.sa_failed", error=repr(sa_raw))
+
     gc_result: GroundingResult = (
         gc_raw if isinstance(gc_raw, GroundingResult)
         else GroundingResult(gc=GCSignal.NOT_SUPPORTED)
