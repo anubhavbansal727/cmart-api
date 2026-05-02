@@ -102,11 +102,16 @@ async def submit_query(
         )
 
     if decision == DecisionType.CLARIFY:
+        clarification_question = ctx.analysis.clarification_question if ctx.analysis else None
+        # DEFAULT_SAFE fallback: RS=MODERATE with QC=CLEAR has no LLM-generated question
+        if clarification_question is None:
+            clarification_question = (
+                "Could you provide more detail about your issue so I can find the most "
+                "relevant information for you?"
+            )
         return QueryResponse(
             decision=decision,
-            clarification_question=(
-                ctx.analysis.clarification_question if ctx.analysis else None
-            ),
+            clarification_question=clarification_question,
             session_id=ctx.session_id,
             sources=sources,
             reason=reason,
