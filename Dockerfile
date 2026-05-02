@@ -19,6 +19,8 @@ FROM python:3.12-slim AS runtime
 
 WORKDIR /app
 COPY --from=builder /build/.venv /app/.venv
+COPY alembic.ini ./
+COPY alembic/ ./alembic/
 
 ENV PATH="/app/.venv/bin:$PATH"
 
