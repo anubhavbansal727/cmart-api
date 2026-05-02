@@ -6,11 +6,11 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
+import cmart.db.models  # noqa: F401 — ensure all models are registered on Base.metadata
+from cmart.config import get_settings
+
 # Import Base so Alembic can introspect all mapped models
 from cmart.db.engine import Base  # noqa: F401
-import cmart.db.models  # noqa: F401 — ensure all models are registered on Base.metadata
-
-from cmart.config import get_settings
 
 # Alembic Config object — provides access to the values in alembic.ini
 config = context.config

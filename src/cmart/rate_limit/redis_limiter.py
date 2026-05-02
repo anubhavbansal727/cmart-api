@@ -3,8 +3,6 @@ from __future__ import annotations
 import time
 from typing import Any
 
-import redis.asyncio as aioredis
-
 from cmart.config import get_settings
 from cmart.utils.errors import RateLimitError
 

@@ -42,7 +42,7 @@ class PineconeVectorStoreClient(VectorStoreClient):
     # Internal sync helpers — run inside executor
     # ------------------------------------------------------------------
 
-    def _sync_upsert(self, namespace: str, vectors: list[dict]) -> None:
+    def _sync_upsert(self, namespace: str, vectors: list[dict[str, Any]]) -> None:
         index = self._get_index()
         for batch_start in range(0, len(vectors), _UPSERT_BATCH_SIZE):
             batch = vectors[batch_start : batch_start + _UPSERT_BATCH_SIZE]
@@ -53,7 +53,7 @@ class PineconeVectorStoreClient(VectorStoreClient):
         namespace: str,
         vector: list[float],
         top_k: int,
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         index = self._get_index()
         response = index.query(
             vector=vector,
@@ -80,7 +80,7 @@ class PineconeVectorStoreClient(VectorStoreClient):
     # Public async interface
     # ------------------------------------------------------------------
 
-    async def upsert(self, namespace: str, vectors: list[dict]) -> None:
+    async def upsert(self, namespace: str, vectors: list[dict[str, Any]]) -> None:
         """Upsert vectors in batches of 100 into the given namespace."""
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, partial(self._sync_upsert, namespace, vectors))
@@ -90,7 +90,7 @@ class PineconeVectorStoreClient(VectorStoreClient):
         namespace: str,
         vector: list[float],
         top_k: int = 5,
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         """Return top-k nearest neighbours scoped to namespace."""
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(

@@ -43,13 +43,21 @@ async def run_test() -> None:
 
     await client.upsert(
         namespace=ns_a,
-        vectors=[{"id": "doc_a_chunk_0", "values": vec_a, "metadata": {"doc_id": "doc_a", "account_id": ns_a, "content": "Account A secret"}}],
+        vectors=[{
+            "id": "doc_a_chunk_0",
+            "values": vec_a,
+            "metadata": {"doc_id": "doc_a", "account_id": ns_a, "content": "Account A secret"},
+        }],
     )
     print("  [ok] Upserted doc_a into namespace A")
 
     await client.upsert(
         namespace=ns_b,
-        vectors=[{"id": "doc_b_chunk_0", "values": vec_b, "metadata": {"doc_id": "doc_b", "account_id": ns_b, "content": "Account B secret"}}],
+        vectors=[{
+            "id": "doc_b_chunk_0",
+            "values": vec_b,
+            "metadata": {"doc_id": "doc_b", "account_id": ns_b, "content": "Account B secret"},
+        }],
     )
     print("  [ok] Upserted doc_b into namespace B")
 

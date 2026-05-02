@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -28,11 +30,11 @@ class IngestRequest(BaseModel):
 class IngestResponse(BaseModel):
     """Response body for POST /ingest."""
 
-    ingested: list[dict] = Field(
+    ingested: list[dict[str, Any]] = Field(
         default_factory=list,
         description="Successfully ingested documents. Each entry: {doc_id, chunk_count, status}.",
     )
-    failed: list[dict] = Field(
+    failed: list[dict[str, Any]] = Field(
         default_factory=list,
         description="Documents that failed ingestion. Each entry: {doc_id, error}.",
     )

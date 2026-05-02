@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 import structlog
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,8 +41,8 @@ async def ingest_documents(
     are deleted first and the DocMeta row is updated in place.
     """
     namespace = str(account.id)
-    ingested: list[dict] = []
-    failed: list[dict] = []
+    ingested: list[dict[str, Any]] = []
+    failed: list[dict[str, Any]] = []
 
     for doc in request.documents:
         try:

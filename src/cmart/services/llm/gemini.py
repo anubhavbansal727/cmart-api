@@ -17,7 +17,7 @@ _MODEL = "gemini-2.5-flash"
 class GeminiClient(LLMClient):
     def __init__(self) -> None:
         settings = get_settings()
-        self._llm = ChatGoogleGenerativeAI(
+        self._llm = ChatGoogleGenerativeAI(  # type: ignore[call-arg]
             model=_MODEL,
             google_api_key=settings.gemini_api_key,
             temperature=0,
@@ -28,7 +28,7 @@ class GeminiClient(LLMClient):
         return str(response.content)
 
     async def invoke_structured(self, prompt: str, schema: type[T]) -> T:
-        chain = self._llm.with_structured_output(schema)
+        chain = self._llm.with_structured_output(schema)  # type: ignore[arg-type]
         result = await chain.ainvoke([HumanMessage(content=prompt)])
         # langchain-google-genai may return a raw dict instead of a Pydantic instance
         # when the JSON schema has Pydantic v2 keys Gemini ignores (e.g. 'title').

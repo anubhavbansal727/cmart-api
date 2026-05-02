@@ -5,22 +5,17 @@ exercised, including all four ESCALATE reasons and the DEFAULT_SAFE fallback.
 """
 from __future__ import annotations
 
-import pytest
-
 from cmart.pipeline import stage6_decision
 from cmart.schemas.pipeline import (
-    AgreementResult,
     AnalysisResult,
     GCSignal,
-    GroundingResult,
     PipelineContext,
     QCSignal,
-    RSSignal,
     RetrievalResult,
+    RSSignal,
     SASignal,
     ValidationResult,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -125,7 +120,9 @@ def test_answer_high_confidence() -> None:
 # ---------------------------------------------------------------------------
 
 def test_clarify_ambiguous_query() -> None:
-    ctx = _ctx(rs=RSSignal.STRONG, gc=GCSignal.FULLY_SUPPORTED, sa=SASignal.AGREES, qc=QCSignal.AMBIGUOUS)
+    ctx = _ctx(
+        rs=RSSignal.STRONG, gc=GCSignal.FULLY_SUPPORTED, sa=SASignal.AGREES, qc=QCSignal.AMBIGUOUS
+    )
     result = stage6_decision.run(ctx)
     assert result.decision_result is not None
     assert result.decision_result.decision == "clarify"
@@ -133,28 +130,36 @@ def test_clarify_ambiguous_query() -> None:
 
 
 def test_clarify_incomplete_query() -> None:
-    ctx = _ctx(rs=RSSignal.STRONG, gc=GCSignal.FULLY_SUPPORTED, sa=SASignal.AGREES, qc=QCSignal.INCOMPLETE)
+    ctx = _ctx(
+        rs=RSSignal.STRONG, gc=GCSignal.FULLY_SUPPORTED, sa=SASignal.AGREES, qc=QCSignal.INCOMPLETE
+    )
     result = stage6_decision.run(ctx)
     assert result.decision_result is not None
     assert result.decision_result.decision == "clarify"
 
 
 def test_clarify_moderate_retrieval() -> None:
-    ctx = _ctx(rs=RSSignal.MODERATE, gc=GCSignal.FULLY_SUPPORTED, sa=SASignal.AGREES, qc=QCSignal.CLEAR)
+    ctx = _ctx(
+        rs=RSSignal.MODERATE, gc=GCSignal.FULLY_SUPPORTED, sa=SASignal.AGREES, qc=QCSignal.CLEAR
+    )
     result = stage6_decision.run(ctx)
     assert result.decision_result is not None
     assert result.decision_result.decision == "clarify"
 
 
 def test_clarify_partially_supported() -> None:
-    ctx = _ctx(rs=RSSignal.STRONG, gc=GCSignal.PARTIALLY_SUPPORTED, sa=SASignal.AGREES, qc=QCSignal.CLEAR)
+    ctx = _ctx(
+        rs=RSSignal.STRONG, gc=GCSignal.PARTIALLY_SUPPORTED, sa=SASignal.AGREES, qc=QCSignal.CLEAR
+    )
     result = stage6_decision.run(ctx)
     assert result.decision_result is not None
     assert result.decision_result.decision == "clarify"
 
 
 def test_clarify_partial_agreement() -> None:
-    ctx = _ctx(rs=RSSignal.STRONG, gc=GCSignal.FULLY_SUPPORTED, sa=SASignal.PARTIAL, qc=QCSignal.CLEAR)
+    ctx = _ctx(
+        rs=RSSignal.STRONG, gc=GCSignal.FULLY_SUPPORTED, sa=SASignal.PARTIAL, qc=QCSignal.CLEAR
+    )
     result = stage6_decision.run(ctx)
     assert result.decision_result is not None
     assert result.decision_result.decision == "clarify"

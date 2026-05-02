@@ -53,4 +53,4 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     """Return a cached Settings instance. Safe to call repeatedly."""
-    return Settings()
+    return Settings()  # type: ignore[call-arg]  # pydantic-settings reads fields from env

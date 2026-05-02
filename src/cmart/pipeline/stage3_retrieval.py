@@ -7,9 +7,9 @@ import structlog
 from cmart.config import get_settings
 from cmart.schemas.pipeline import (
     PipelineContext,
-    RSSignal,
     RetrievalResult,
     RetrievedDoc,
+    RSSignal,
 )
 from cmart.services.embeddings.openai import OpenAIEmbeddingClient
 from cmart.services.vector_store.pinecone import PineconeVectorStoreClient

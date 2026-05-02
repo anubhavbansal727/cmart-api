@@ -26,7 +26,7 @@ class SessionStore:
     Key: session:{session_id} — JSON blob, TTL = session_ttl_seconds.
     """
 
-    def __init__(self, redis: aioredis.Redis) -> None:  # type: ignore[type-arg]
+    def __init__(self, redis: aioredis.Redis) -> None:
         self._redis = redis
         self._ttl = get_settings().session_ttl_seconds
 

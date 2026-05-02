@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class VectorStoreClient(ABC):
@@ -11,7 +12,7 @@ class VectorStoreClient(ABC):
     """
 
     @abstractmethod
-    async def upsert(self, namespace: str, vectors: list[dict]) -> None:
+    async def upsert(self, namespace: str, vectors: list[dict[str, Any]]) -> None:
         """Write or overwrite a batch of vectors in the given namespace.
 
         Each dict in *vectors* must have the shape:
@@ -25,7 +26,7 @@ class VectorStoreClient(ABC):
         namespace: str,
         vector: list[float],
         top_k: int = 5,
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         """Return the top-k nearest neighbours from *namespace*.
 
         Each returned dict has the shape:

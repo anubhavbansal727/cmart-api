@@ -10,7 +10,6 @@ from httpx import ASGITransport, AsyncClient
 
 from cmart.main import app as _app
 
-
 # ---------------------------------------------------------------------------
 # Event loop
 # ---------------------------------------------------------------------------

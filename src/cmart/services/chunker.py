@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 import html2text
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -37,7 +39,7 @@ class DocumentChunker:
         title: str,
         source_url: str | None,
         account_id: str,
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         """Split *content* into chunks and attach document metadata.
 
         Returns a list of dicts, one per chunk:

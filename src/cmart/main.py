@@ -58,7 +58,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     import redis.asyncio as aioredis
 
     try:
-        redis_client = aioredis.from_url(
+        redis_client = aioredis.from_url(  # type: ignore[no-untyped-call]
             settings.redis_url,
             encoding="utf-8",
             decode_responses=True,

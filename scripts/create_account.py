@@ -15,10 +15,8 @@ from pathlib import Path
 # Allow running from project root without installing the package
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from cmart.db.engine import AsyncSessionLocal, engine
-from cmart.db.models import Base
 from cmart.db.repositories.account import create_account, get_by_api_key
 
 
@@ -32,11 +30,11 @@ async def provision(name: str, api_key: str) -> None:
 
             account = await create_account(db, name=name, api_key=api_key)
 
-    print(f"[ok] Account created")
+    print("[ok] Account created")
     print(f"     Name:    {account.name}")
     print(f"     ID:      {account.id}")
     print(f"     API key: {api_key}")
-    print(f"\n     Authorization header:")
+    print("\n     Authorization header:")
     print(f"     Bearer {api_key}")
 
 
