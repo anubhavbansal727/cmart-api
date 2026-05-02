@@ -17,12 +17,17 @@ required to give a useful answer.
 
 Rules:
 - Do NOT answer the query. Only classify it.
-- If AMBIGUOUS or INCOMPLETE, provide a single focused clarification question — \
-the minimum information needed to resolve the ambiguity. Do not ask multiple questions.
+- If AMBIGUOUS or INCOMPLETE, you MUST provide a clarification_question — \
+a single focused question that is the minimum information needed to resolve the ambiguity.
 - If CLEAR, set clarification_question to null.
 
 Query: {query}\
 """
+
+_DEFAULT_CLARIFICATION: dict[QCSignal, str] = {
+    QCSignal.AMBIGUOUS: "Could you clarify what specifically you need help with?",
+    QCSignal.INCOMPLETE: "Could you provide more context, such as the product area or account type?",
+}
 
 
 async def run(ctx: PipelineContext) -> PipelineContext:
@@ -37,6 +42,13 @@ async def run(ctx: PipelineContext) -> PipelineContext:
     except Exception:
         # LLM failure → safe default: treat as ambiguous, never crash pipeline
         result = AnalysisResult(qc=QCSignal.AMBIGUOUS)
+
+    # Ensure clarification_question is always populated for non-CLEAR classifications
+    if result.qc != QCSignal.CLEAR and result.clarification_question is None:
+        result = AnalysisResult(
+            qc=result.qc,
+            clarification_question=_DEFAULT_CLARIFICATION[result.qc],
+        )
 
     ctx.analysis = result
     ctx.stage_latencies["analysis"] = int((time.monotonic() - t0) * 1000)
