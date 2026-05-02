@@ -30,10 +30,12 @@ class GeminiClient(LLMClient):
     async def invoke_structured(self, prompt: str, schema: type[T]) -> T:
         chain = self._llm.with_structured_output(schema)  # type: ignore[arg-type]
         result = await chain.ainvoke([HumanMessage(content=prompt)])
-        # langchain-google-genai may return a raw dict instead of a Pydantic instance
-        # when the JSON schema has Pydantic v2 keys Gemini ignores (e.g. 'title').
         if isinstance(result, schema):
             return result
         if isinstance(result, dict):
             return schema(**result)
+        # langchain-google-genai tool-call mode returns a list of {type, args} dicts
+        if isinstance(result, list) and result and isinstance(result[0], dict):
+            args = result[0].get("args", {})
+            return schema(**args)
         raise ValueError(f"invoke_structured returned unexpected type {type(result)}: {result!r}")
