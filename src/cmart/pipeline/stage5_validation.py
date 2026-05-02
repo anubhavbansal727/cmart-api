@@ -52,10 +52,17 @@ Context:
 def _format_context(ctx: PipelineContext) -> str:
     if not ctx.retrieval or not ctx.retrieval.docs:
         return "No context available."
+    # Group chunks by doc_id so the SA validator treats them as one source,
+    # not as separate potentially-conflicting documents.
+    seen: dict[str, list[str]] = {}
+    titles: dict[str, str] = {}
+    for doc in ctx.retrieval.docs:
+        seen.setdefault(doc.doc_id, []).append(doc.content)
+        titles[doc.doc_id] = doc.title or doc.doc_id
     parts = []
-    for i, doc in enumerate(ctx.retrieval.docs, 1):
-        title = doc.title or doc.doc_id
-        parts.append(f"[{i}] Title: {title}\nContent: {doc.content}")
+    for i, (doc_id, chunks) in enumerate(seen.items(), 1):
+        combined = " ".join(chunks)
+        parts.append(f"[{i}] Title: {titles[doc_id]}\nContent: {combined}")
     return "\n\n".join(parts)
 
 
