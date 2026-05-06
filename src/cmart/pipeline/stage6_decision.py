@@ -19,16 +19,32 @@ def run(ctx: PipelineContext) -> PipelineContext:
     """
     settings = get_settings()
 
-    # Safe defaults when upstream stages failed
-    gc = ctx.validation.gc if ctx.validation else GCSignal.NOT_SUPPORTED
-    sa = ctx.validation.sa if ctx.validation else SASignal.CONFLICT
     rs = ctx.retrieval.rs_signal if ctx.retrieval else RSSignal.WEAK
     qc = ctx.analysis.qc if ctx.analysis else QCSignal.AMBIGUOUS
 
-    # --- Priority 1: ESCALATE ---
+    # --- Priority 1: ESCALATE on retrieval failure ---
     if ctx.retrieval and ctx.retrieval.retrieval_failed:
         ctx.decision_result = DecisionResult(decision="escalate", reason="RETRIEVAL_FAILURE")
         return ctx
+
+    # --- Short-circuit when QC != CLEAR ---
+    # No answer was generated, so GC/SA are undefined. Only RS weakness and
+    # clarification limits can escalate; everything else routes to CLARIFY.
+    if qc != QCSignal.CLEAR:
+        if rs == RSSignal.WEAK:
+            ctx.decision_result = DecisionResult(decision="escalate", reason="LOW_RETRIEVAL")
+            return ctx
+        if ctx.clarify_rounds >= settings.max_clarify_rounds:
+            ctx.decision_result = DecisionResult(
+                decision="escalate", reason="CLARIFICATION_LIMIT_REACHED"
+            )
+            return ctx
+        ctx.decision_result = DecisionResult(decision="clarify", reason="DEFAULT_SAFE")
+        return ctx
+
+    # --- QC=CLEAR path: GC/SA signals are meaningful ---
+    gc = ctx.validation.gc if ctx.validation else GCSignal.NOT_SUPPORTED
+    sa = ctx.validation.sa if ctx.validation else SASignal.CONFLICT
 
     if gc == GCSignal.NOT_SUPPORTED:
         ctx.decision_result = DecisionResult(decision="escalate", reason="LOW_GROUNDING")

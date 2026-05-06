@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+
 from cmart.pipeline import (
     stage1_intake,
     stage2_analysis,
@@ -9,7 +11,7 @@ from cmart.pipeline import (
     stage6_decision,
     stage7_response,
 )
-from cmart.schemas.pipeline import PipelineContext
+from cmart.schemas.pipeline import PipelineContext, QCSignal
 from cmart.services.session_store import SessionStore
 
 
@@ -24,10 +26,20 @@ async def run(
             ctx.clarify_rounds = session.clarify_rounds
 
     ctx = await stage1_intake.run(ctx)
-    ctx = await stage2_analysis.run(ctx)
-    ctx = await stage3_retrieval.run(ctx)
-    ctx = await stage4_generation.run(ctx)
-    ctx = await stage5_validation.run(ctx)
+
+    # Stages 2 and 3 are independent: run concurrently to reduce end-to-end latency.
+    # Both mutate ctx in place (different fields); asyncio is single-threaded, no races.
+    await asyncio.gather(
+        stage2_analysis.run(ctx),
+        stage3_retrieval.run(ctx),
+    )
+
+    # Short-circuit: skip generation and validation when the query cannot be answered.
+    # If QC != CLEAR, no answer is generated, so GC/SA signals would be meaningless.
+    if ctx.analysis and ctx.analysis.qc == QCSignal.CLEAR:
+        ctx = await stage4_generation.run(ctx)
+        ctx = await stage5_validation.run(ctx)
+
     ctx = stage6_decision.run(ctx)
     ctx = await stage7_response.run(ctx, session_store=session_store)
     return ctx

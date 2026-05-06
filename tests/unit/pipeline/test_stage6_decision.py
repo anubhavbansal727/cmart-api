@@ -175,7 +175,8 @@ def test_missing_all_signals_escalates() -> None:
     result = stage6_decision.run(ctx)
     assert result.decision_result is not None
     assert result.decision_result.decision == "escalate"
-    assert result.decision_result.reason == "LOW_GROUNDING"  # gc defaults to NOT_SUPPORTED
+    # qc defaults to AMBIGUOUS → short-circuit; rs defaults to WEAK → LOW_RETRIEVAL
+    assert result.decision_result.reason == "LOW_RETRIEVAL"
 
 
 def test_missing_validation_escalates() -> None:
@@ -198,3 +199,29 @@ def test_escalate_retrieval_failure() -> None:
     assert result.decision_result is not None
     assert result.decision_result.decision == "escalate"
     assert result.decision_result.reason == "RETRIEVAL_FAILURE"
+
+
+# ---------------------------------------------------------------------------
+# QC short-circuit paths (stages 4+5 skipped when QC != CLEAR)
+# ---------------------------------------------------------------------------
+
+
+def test_ambiguous_weak_retrieval_escalates() -> None:
+    """QC=AMBIGUOUS + RS=WEAK → ESCALATE via LOW_RETRIEVAL (no GC/SA available)."""
+    ctx = _ctx(qc=QCSignal.AMBIGUOUS, rs=RSSignal.WEAK)
+    ctx.validation = None  # stages 4+5 were skipped
+    result = stage6_decision.run(ctx)
+    assert result.decision_result is not None
+    assert result.decision_result.decision == "escalate"
+    assert result.decision_result.reason == "LOW_RETRIEVAL"
+
+
+def test_ambiguous_clarification_limit_escalates() -> None:
+    """QC=AMBIGUOUS + clarify_rounds at max → ESCALATE (CLARIFICATION_LIMIT_REACHED)."""
+    ctx = _ctx(qc=QCSignal.AMBIGUOUS, rs=RSSignal.STRONG)
+    ctx.validation = None  # stages 4+5 were skipped
+    ctx.clarify_rounds = 2
+    result = stage6_decision.run(ctx)
+    assert result.decision_result is not None
+    assert result.decision_result.decision == "escalate"
+    assert result.decision_result.reason == "CLARIFICATION_LIMIT_REACHED"

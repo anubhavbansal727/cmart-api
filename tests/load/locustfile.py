@@ -1,9 +1,9 @@
-"""Locust load test — verifies 100 req/min rate limit holds under concurrent load.
+"""Locust load test — throughput, latency, and rate limit validation.
 
 Usage:
     locust -f tests/load/locustfile.py --host http://localhost:8000
 
-Set CMART_TEST_API_KEY env var to match the key in your .env / Railway environment.
+Set CMART_TEST_API_KEY and CMART_TEST_ACCOUNT_ID env vars to match staging values.
 """
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ import os
 from locust import HttpUser, between, task
 
 _API_KEY = os.getenv("CMART_TEST_API_KEY", "test-key")
+_ACCOUNT_ID = os.getenv("CMART_TEST_ACCOUNT_ID", "")
 _HEADERS = {"Authorization": f"Bearer {_API_KEY}"}
 
 
@@ -28,6 +29,7 @@ class CMARTQueryUser(HttpUser):
             json={
                 "query": "How do I reset my password?",
                 "user_id": "load-test-user",
+                "account_id": _ACCOUNT_ID,
             },
             name="/query [clear]",
         )
@@ -40,6 +42,7 @@ class CMARTQueryUser(HttpUser):
             json={
                 "query": "Something is broken",
                 "user_id": "load-test-user",
+                "account_id": _ACCOUNT_ID,
             },
             name="/query [ambiguous]",
         )
