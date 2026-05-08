@@ -5,7 +5,6 @@ from __future__ import annotations
 # Stages 4 (generation) and 5 (validation) are skipped when QC != CLEAR — no answer
 # is generated for ambiguous/incomplete queries, so GC/SA signals would be meaningless.
 # Session clarify_rounds is hydrated before the pipeline runs so stage 6 can enforce the limit.
-
 import asyncio
 
 from cmart.pipeline import (

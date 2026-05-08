@@ -6,7 +6,6 @@ from __future__ import annotations
 # ESCALATE → packages all signals, the query, the answer attempt, and retrieved docs
 #             into escalation_context for the human agent handoff.
 # Does not format the final API response — that happens in the API service layer.
-
 from typing import Any
 
 from cmart.schemas.pipeline import PipelineContext

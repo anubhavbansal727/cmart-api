@@ -5,7 +5,6 @@ from __future__ import annotations
 # CLEAR means "well-formed enough to search"; the KB check happens in stages 3 & 5.
 # Non-CLEAR queries short-circuit to CLARIFY in the Decision Engine before retrieval.
 # LLM failure → safe default of AMBIGUOUS so the pipeline never crashes here.
-
 import time
 
 from cmart.schemas.pipeline import AnalysisResult, PipelineContext, QCSignal

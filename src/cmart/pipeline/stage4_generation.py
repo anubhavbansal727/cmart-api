@@ -4,7 +4,6 @@ from __future__ import annotations
 # The LLM is strictly forbidden from using external knowledge; every claim must cite a source.
 # The generated answer is NOT returned to the user here — it goes to stage 5 for validation first.
 # On LLM failure → stores a fallback message; the validation stage will then force ESCALATE.
-
 import time
 
 from cmart.schemas.pipeline import GenerationResult, PipelineContext
