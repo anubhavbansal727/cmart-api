@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+# Stage 6: Decision Engine — pure rule-based routing; no ML, no I/O.
+# Evaluates all four signals (RS, QC, GC, SA) and outputs ANSWER / CLARIFY / ESCALATE.
+# Priority order: ESCALATE > ANSWER > CLARIFY (CLARIFY is the safe default).
+# QC != CLEAR short-circuits before checking GC/SA (no answer was generated yet).
+# ANSWER requires all four signals to be at their highest values simultaneously.
+
 from cmart.config import get_settings
 from cmart.schemas.pipeline import (
     DecisionResult,

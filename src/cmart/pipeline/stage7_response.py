@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+# Stage 7: Response — handles session side-effects and builds the escalation context.
+# CLARIFY → creates or increments a session to track clarification rounds.
+# ANSWER / ESCALATE → resolves and deletes the session.
+# ESCALATE → packages all signals, the query, the answer attempt, and retrieved docs
+#             into escalation_context for the human agent handoff.
+# Does not format the final API response — that happens in the API service layer.
+
 from typing import Any
 
 from cmart.schemas.pipeline import PipelineContext

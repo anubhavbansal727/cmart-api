@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+# Stage 5: Validation — runs two LLM checks in parallel to produce GC and SA signals.
+# GC (Grounding Check): are all claims in the answer backed by the retrieved docs?
+# SA (Source Agreement): do the retrieved docs contradict each other on this query?
+# Both checks run concurrently via asyncio.gather for speed.
+# On failure → GC=NOT_SUPPORTED / SA=CONFLICT, which forces ESCALATE in the Decision Engine.
+# Chunks from the same doc are merged before SA validation so they aren't treated as conflicting sources.
+
 import asyncio
 import time
 

@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+# Orchestrator — wires all 7 stages and controls execution order.
+# Stages 2 (analysis) and 3 (retrieval) run concurrently to reduce end-to-end latency.
+# Stages 4 (generation) and 5 (validation) are skipped when QC != CLEAR — no answer
+# is generated for ambiguous/incomplete queries, so GC/SA signals would be meaningless.
+# Session clarify_rounds is hydrated before the pipeline runs so stage 6 can enforce the limit.
+
 import asyncio
 
 from cmart.pipeline import (
