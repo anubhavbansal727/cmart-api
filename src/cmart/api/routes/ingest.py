@@ -47,8 +47,8 @@ async def ingest_documents(
 
     for doc in request.documents:
         try:
-            # Step 0 — Resolve content: fetch from URL if content was not provided directly
-            content: str = doc.content or await fetch_text(doc.url)  # type: ignore[arg-type]
+            # Step 0 — Fetch content from URL
+            content: str = await fetch_text(doc.url)
             source_url = doc.source_url or doc.url
 
             # Step 1 — Idempotency: purge any existing vectors for this doc

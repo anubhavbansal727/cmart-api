@@ -150,22 +150,8 @@ Echo `session_id` back in follow-up requests. Pipeline escalates automatically a
 
 ### POST `/ingest`
 
-Ingest knowledge base documents. Each document must supply either `content` (raw text) or `url` (fetched and extracted automatically) — not both.
+Ingest knowledge base documents by URL. CMART fetches the page, converts HTML to plain text, and chunks it for vector storage.
 
-**Content-based ingestion:**
-```json
-{
-  "documents": [
-    {
-      "doc_id": "doc_001",
-      "title": "Account Security Guide",
-      "content": "To reset your password, go to Settings → Security..."
-    }
-  ]
-}
-```
-
-**URL-based ingestion:**
 ```json
 {
   "documents": [
@@ -178,9 +164,7 @@ Ingest knowledge base documents. Each document must supply either `content` (raw
 }
 ```
 
-When `url` is provided, CMART fetches the page, converts HTML to plain text, and uses the URL as `source_url` for attribution. Override `source_url` explicitly if the canonical URL differs from the fetch URL.
-
-Up to 50 documents per request. Per-document failures do not abort the batch — check the `failed` list in the response.
+`source_url` defaults to `url` for attribution. Override it explicitly if the canonical URL differs from the fetch URL. Up to 50 documents per request. Per-document failures do not abort the batch — check the `failed` list in the response.
 
 ### DELETE `/ingest/{doc_id}`
 
