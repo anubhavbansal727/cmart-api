@@ -92,6 +92,13 @@ async def submit_query(
             for d in ctx.retrieval.docs
         ]
 
+    signals = {
+        "rs": ctx.retrieval.rs_signal.value if ctx.retrieval else None,
+        "qc": ctx.analysis.qc.value if ctx.analysis else None,
+        "gc": ctx.validation.gc.value if ctx.validation else None,
+        "sa": ctx.validation.sa.value if ctx.validation else None,
+    }
+
     if decision == DecisionType.ANSWER:
         return QueryResponse(
             decision=decision,
@@ -99,6 +106,7 @@ async def submit_query(
             sources=sources,
             reason=reason,
             latency_ms=latency_ms,
+            signals=signals,
         )
 
     if decision == DecisionType.CLARIFY:
@@ -116,6 +124,7 @@ async def submit_query(
             sources=sources,
             reason=reason,
             latency_ms=latency_ms,
+            signals=signals,
         )
 
     # ESCALATE
@@ -125,4 +134,5 @@ async def submit_query(
         sources=sources,
         reason=reason,
         latency_ms=latency_ms,
+        signals=signals,
     )

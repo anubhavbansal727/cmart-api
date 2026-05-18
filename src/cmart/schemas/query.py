@@ -38,3 +38,4 @@ class QueryResponse(BaseModel):
     sources: list[RetrievedDoc] = Field(default_factory=list)
     reason: str
     latency_ms: int
+    signals: dict[str, str | None] | None = None

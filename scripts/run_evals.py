@@ -82,8 +82,11 @@ def _run(args: argparse.Namespace) -> None:
     print(f"Host:    {args.host}")
     print(f"Dataset: {args.dataset}")
     print(f"Cases:   {len(dataset)}\n")
-    print(f"{'ID':<10} {'Expected':<10} {'Actual':<10} {'Reason':<30} {'ms':<6} Result")
-    print("-" * 85)
+    print(
+        f"{'ID':<10} {'Expected':<10} {'Actual':<10} {'Reason':<28} "
+        f"{'RS':<8} {'QC':<12} {'GC':<18} {'SA':<8} {'ms':<6} Result"
+    )
+    print("-" * 120)
 
     with httpx.Client(base_url=args.host, headers=headers, timeout=args.timeout) as client:
         for case in dataset:
@@ -108,6 +111,12 @@ def _run(args: argparse.Namespace) -> None:
                 latency = body.get("latency_ms", 0)
                 total_latency += latency
 
+                sigs = body.get("signals") or {}
+                rs = sigs.get("rs") or "-"
+                qc = sigs.get("qc") or "-"
+                gc = sigs.get("gc") or "-"
+                sa = sigs.get("sa") or "-"
+
                 if actual_decision == expected_decision:
                     passed += 1
                     result = PASS
@@ -117,19 +126,22 @@ def _run(args: argparse.Namespace) -> None:
 
                 print(
                     f"{case_id:<10} {expected_decision:<10} {actual_decision:<10} "
-                    f"{reason:<30} {latency:<6} {result}"
+                    f"{reason:<28} {rs:<8} {qc:<12} {gc:<18} {sa:<8} {latency:<6} {result}"
                 )
 
             except Exception as exc:
                 errors += 1
-                err = str(exc)[:30]
-                row = f"{case_id:<10} {expected_decision:<10} {'ERROR':<10} {err:<30} {'':6} {FAIL}"
+                err = str(exc)[:28]
+                row = (
+                    f"{case_id:<10} {expected_decision:<10} {'ERROR':<10} {err:<28} "
+                    f"{'-':<8} {'-':<12} {'-':<18} {'-':<8} {'':6} {FAIL}"
+                )
                 print(row)
 
     total = passed + failed + errors
     avg_latency = total_latency // max(passed + failed, 1)
 
-    print("-" * 85)
+    print("-" * 120)
     print(f"\n{BOLD}Results{RESET}")
     print(f"  Passed:      {passed}/{total}")
     print(f"  Failed:      {failed}/{total}")
