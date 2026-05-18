@@ -150,19 +150,37 @@ Echo `session_id` back in follow-up requests. Pipeline escalates automatically a
 
 ### POST `/ingest`
 
-Ingest a knowledge base document (plain text, Markdown, or HTML).
+Ingest knowledge base documents. Each document must supply either `content` (raw text) or `url` (fetched and extracted automatically) — not both.
 
-```bash
-curl -X POST https://<host>/ingest \
-  -H "Authorization: Bearer <api-key>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "doc_id": "doc_001",
-    "title": "Account Security Guide",
-    "content": "...",
-    "content_type": "markdown"
-  }'
+**Content-based ingestion:**
+```json
+{
+  "documents": [
+    {
+      "doc_id": "doc_001",
+      "title": "Account Security Guide",
+      "content": "To reset your password, go to Settings → Security..."
+    }
+  ]
+}
 ```
+
+**URL-based ingestion:**
+```json
+{
+  "documents": [
+    {
+      "doc_id": "doc_001",
+      "title": "Account Security Guide",
+      "url": "https://help.yourproduct.com/account-security"
+    }
+  ]
+}
+```
+
+When `url` is provided, CMART fetches the page, converts HTML to plain text, and uses the URL as `source_url` for attribution. Override `source_url` explicitly if the canonical URL differs from the fetch URL.
+
+Up to 50 documents per request. Per-document failures do not abort the batch — check the `failed` list in the response.
 
 ### DELETE `/ingest/{doc_id}`
 
@@ -247,7 +265,7 @@ src/cmart/
 ├── pipeline/        # Stages 1–7 (one file per stage) + orchestrator
 ├── rate_limit/      # Redis sliding-window rate limiter
 ├── schemas/         # Pydantic DTOs (query, ingest, pipeline, feedback)
-├── services/        # LLM client (Gemini), vector store (Pinecone), chunker, session store
+├── services/        # LLM client (Gemini), vector store (Pinecone), chunker, session store, url_fetcher
 └── utils/           # Errors, timing
 
 tests/
