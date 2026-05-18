@@ -122,7 +122,8 @@ def _run(args: argparse.Namespace) -> None:
 
             except Exception as exc:
                 errors += 1
-                print(f"{case_id:<10} {expected_decision:<10} {'ERROR':<10} {str(exc)[:30]:<30} {'':6} {FAIL}")
+                err = str(exc)[:30]
+                print(f"{case_id:<10} {expected_decision:<10} {'ERROR':<10} {err:<30} {'':6} {FAIL}")
 
     total = passed + failed + errors
     avg_latency = total_latency // max(passed + failed, 1)
