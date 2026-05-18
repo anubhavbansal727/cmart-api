@@ -129,17 +129,20 @@ async def test_ingest_markdown_document_returns_200(
     client_with_mocks: AsyncClient,
     mocker: MagicMock,
 ) -> None:
-    """POST /ingest with a markdown document must return 200 with chunk_count > 0."""
+    """POST /ingest with a URL must return 200 with chunk_count > 0."""
     mocker.patch(
         "cmart.api.routes.ingest.get_by_doc_id",
-        new=AsyncMock(return_value=None),  # doc does not exist yet
+        new=AsyncMock(return_value=None),
     )
     mocker.patch(
         "cmart.api.routes.ingest.upsert_doc_meta",
         new=AsyncMock(return_value=_make_doc_meta("md-doc-1")),
     )
-
-    content = "# Overview\n\n" + ("CMART resolves support queries autonomously. " * 30)
+    fetched_content = "# Overview\n\n" + ("CMART resolves support queries autonomously. " * 30)
+    mocker.patch(
+        "cmart.api.routes.ingest.fetch_text",
+        new=AsyncMock(return_value=fetched_content),
+    )
 
     response = await client_with_mocks.post(
         "/ingest",
@@ -148,8 +151,7 @@ async def test_ingest_markdown_document_returns_200(
                 {
                     "doc_id": "md-doc-1",
                     "title": "Overview",
-                    "content": content,
-                    "source_url": "https://docs.example.com/overview",
+                    "url": "https://docs.example.com/overview",
                 }
             ]
         },
@@ -191,13 +193,10 @@ async def test_ingest_html_document_strips_tags(
         new=AsyncMock(return_value=_make_doc_meta("html-doc-1")),
     )
 
-    html_content = """
-    <html><body>
-      <h1>Reset Password</h1>
-      <p>Go to Settings and click Reset Password.</p>
-      <p>You will receive an email with a reset link valid for 24 hours.</p>
-    </body></html>
-    """
+    mocker.patch(
+        "cmart.api.routes.ingest.fetch_text",
+        new=AsyncMock(return_value="Reset Password\n\nGo to Settings and click Reset Password.\n\nYou will receive an email with a reset link valid for 24 hours."),
+    )
 
     response = await client_with_mocks.post(
         "/ingest",
@@ -206,8 +205,7 @@ async def test_ingest_html_document_strips_tags(
                 {
                     "doc_id": "html-doc-1",
                     "title": "Reset Password",
-                    "content": html_content,
-                    "source_url": None,
+                    "url": "https://docs.example.com/reset-password",
                 }
             ]
         },
@@ -234,7 +232,6 @@ async def test_ingest_html_document_strips_tags(
 @pytest.mark.asyncio
 async def test_ingest_without_auth_returns_401() -> None:
     """POST /ingest without an Authorization header must return 401."""
-    # Use a plain client with no dependency overrides so real auth runs
     async with AsyncClient(
         transport=ASGITransport(app=app),
         base_url="http://testserver",
@@ -246,7 +243,7 @@ async def test_ingest_without_auth_returns_401() -> None:
                     {
                         "doc_id": "unauth-doc",
                         "title": "Unauth",
-                        "content": "Some content.",
+                        "url": "https://docs.example.com/unauth",
                     }
                 ]
             },
@@ -285,13 +282,17 @@ async def test_ingest_batch_continues_after_per_document_failure(
         "cmart.api.routes.ingest.upsert_doc_meta",
         new=AsyncMock(return_value=_make_doc_meta("ok-doc")),
     )
+    mocker.patch(
+        "cmart.api.routes.ingest.fetch_text",
+        new=AsyncMock(side_effect=["Content A.", "Content B."]),
+    )
 
     response = await client_with_mocks.post(
         "/ingest",
         json={
             "documents": [
-                {"doc_id": "fail-doc", "title": "Fail", "content": "Content A."},
-                {"doc_id": "ok-doc", "title": "OK", "content": "Content B."},
+                {"doc_id": "fail-doc", "title": "Fail", "url": "https://docs.example.com/a"},
+                {"doc_id": "ok-doc", "title": "OK", "url": "https://docs.example.com/b"},
             ]
         },
     )
@@ -377,6 +378,11 @@ async def test_reingest_existing_doc_deletes_old_vectors_first(
         new=AsyncMock(return_value=_make_doc_meta("re-ingest-doc")),
     )
 
+    mocker.patch(
+        "cmart.api.routes.ingest.fetch_text",
+        new=AsyncMock(return_value="Updated content for the document."),
+    )
+
     response = await client_with_mocks.post(
         "/ingest",
         json={
@@ -384,7 +390,7 @@ async def test_reingest_existing_doc_deletes_old_vectors_first(
                 {
                     "doc_id": "re-ingest-doc",
                     "title": "Updated Doc",
-                    "content": "Updated content for the document.",
+                    "url": "https://docs.example.com/updated",
                 }
             ]
         },
