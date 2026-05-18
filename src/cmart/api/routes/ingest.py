@@ -12,8 +12,8 @@ from cmart.db.repositories.doc_meta import get_by_doc_id, upsert_doc_meta
 from cmart.schemas.ingest import DeleteResponse, IngestRequest, IngestResponse
 from cmart.services.chunker import DocumentChunker
 from cmart.services.embeddings.openai import OpenAIEmbeddingClient
-from cmart.services.vector_store.pinecone import PineconeVectorStoreClient
 from cmart.services.url_fetcher import fetch_text
+from cmart.services.vector_store.pinecone import PineconeVectorStoreClient
 from cmart.utils.errors import NotFoundError
 
 router = APIRouter()
