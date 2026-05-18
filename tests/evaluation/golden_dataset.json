@@ -1,1 +1,202 @@
-[]
+[
+  {
+    "id": "gd-001",
+    "query": "How do I enable gamification for my event?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "gamify-your-event",
+    "notes": "Directly covered — toggle rules in the Rules tab to activate gamification."
+  },
+  {
+    "id": "gd-002",
+    "query": "How do I reset the leaderboard during a multi-day event?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "gamify-your-event",
+    "notes": "Explicitly covered — clear points in the Leaderboard tab; copy rankings first."
+  },
+  {
+    "id": "gd-003",
+    "query": "Can I adjust how many points attendees earn for specific actions?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "gamify-your-event",
+    "notes": "Covered — select Edit next to each point value; points must be greater than zero."
+  },
+  {
+    "id": "gd-004",
+    "query": "How do I create a quiz in Ventla?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "create-quizzes-for-fun-learning-and-engagement",
+    "notes": "Step-by-step process is documented — navigate to Dialogue, create a survey with pick-the-correct-answer questions."
+  },
+  {
+    "id": "gd-005",
+    "query": "Can participants see the correct answers immediately after submitting a quiz?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "create-quizzes-for-fun-learning-and-engagement",
+    "notes": "Covered — organizers configure feedback settings to reveal answers immediately or delay."
+  },
+  {
+    "id": "gd-006",
+    "query": "Can I edit quiz submissions after participants have submitted their answers?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "create-quizzes-for-fun-learning-and-engagement",
+    "notes": "Explicitly addressed — once submitted, answers cannot be changed."
+  },
+  {
+    "id": "gd-007",
+    "query": "How do I bulk import attendee information?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "managing-my-information",
+    "notes": "Covered — download template, fill from B1, preserve Email column in A1, import via Participants tab."
+  },
+  {
+    "id": "gd-008",
+    "query": "How do I delete My Information data for a single participant?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "managing-my-information",
+    "notes": "Covered — navigate to profile, Edit, locate My Information section, select Delete."
+  },
+  {
+    "id": "gd-009",
+    "query": "How do I create groups manually in Ventla?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "create-and-assign-groups",
+    "notes": "Covered — Admin panel > Participants > Groups tab, create group, assign via checkboxes."
+  },
+  {
+    "id": "gd-010",
+    "query": "Can I hide content from participants who are not in a specific group?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "create-and-assign-groups",
+    "notes": "Covered — Hidden Groups feature; content only visible to participants in that group."
+  },
+  {
+    "id": "gd-011",
+    "query": "How do I assign multiple groups to a single attendee during file import?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "create-and-assign-groups",
+    "notes": "Covered — separate multiple groups with semicolons in the import template's final column."
+  },
+  {
+    "id": "gd-012",
+    "query": "What trigger does Ventla support in Zapier?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "zapier",
+    "notes": "Covered — only one trigger: Accepted Invitation to Event."
+  },
+  {
+    "id": "gd-013",
+    "query": "What attendee data fields does Ventla send to Zapier?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "zapier",
+    "notes": "Covered — first name, last name, company, phone, job title, email, and event name."
+  },
+  {
+    "id": "gd-014",
+    "query": "How do I enable the Zapier integration for my event?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "zapier",
+    "notes": "Covered — contact support@ventla.io to enable, then configure via Settings > Features & Integrations."
+  },
+  {
+    "id": "gd-015",
+    "query": "How do I link a dialogue to a program item?",
+    "expected_decision": "answer",
+    "expected_qc": "CLEAR",
+    "source_doc": "link-dialogue-with-program-or-information-items",
+    "notes": "Covered — drag-and-drop interface; push notifications sent to direct participants."
+  },
+  {
+    "id": "gd-016",
+    "query": "How do I set up my event?",
+    "expected_decision": "clarify",
+    "expected_qc": "AMBIGUOUS",
+    "source_doc": null,
+    "notes": "Too vague — could mean gamification, groups, programme, registration, or anything else."
+  },
+  {
+    "id": "gd-017",
+    "query": "It's not working",
+    "expected_decision": "clarify",
+    "expected_qc": "INCOMPLETE",
+    "source_doc": null,
+    "notes": "No context — missing what feature, what error, what the user was trying to do."
+  },
+  {
+    "id": "gd-018",
+    "query": "How do I send notifications?",
+    "expected_decision": "clarify",
+    "expected_qc": "AMBIGUOUS",
+    "source_doc": null,
+    "notes": "Ambiguous — could relate to gamification rules, quiz launch, dialogue push, or Zapier."
+  },
+  {
+    "id": "gd-019",
+    "query": "Can I add participants?",
+    "expected_decision": "clarify",
+    "expected_qc": "AMBIGUOUS",
+    "source_doc": null,
+    "notes": "Ambiguous — could mean import, manual entry, Ventla Invite, or group assignment."
+  },
+  {
+    "id": "gd-020",
+    "query": "How do I change the settings?",
+    "expected_decision": "clarify",
+    "expected_qc": "INCOMPLETE",
+    "source_doc": null,
+    "notes": "Incomplete — missing which feature's settings (gamification, Zapier, groups, etc.)."
+  },
+  {
+    "id": "gd-021",
+    "query": "How do I integrate Ventla with Salesforce?",
+    "expected_decision": "escalate",
+    "expected_qc": "CLEAR",
+    "source_doc": null,
+    "notes": "Not in KB — only Zapier integration is documented; Salesforce-specific setup is not covered."
+  },
+  {
+    "id": "gd-022",
+    "query": "What are the pricing plans for Ventla?",
+    "expected_decision": "escalate",
+    "expected_qc": "CLEAR",
+    "source_doc": null,
+    "notes": "Not in KB — no pricing information in any ingested doc."
+  },
+  {
+    "id": "gd-023",
+    "query": "How do I set up single sign-on (SSO) for my organisation?",
+    "expected_decision": "escalate",
+    "expected_qc": "CLEAR",
+    "source_doc": null,
+    "notes": "Not in KB — SSO is not covered in any ingested document."
+  },
+  {
+    "id": "gd-024",
+    "query": "How do I cancel my Ventla subscription?",
+    "expected_decision": "escalate",
+    "expected_qc": "CLEAR",
+    "source_doc": null,
+    "notes": "Not in KB — billing and subscription management not documented."
+  },
+  {
+    "id": "gd-025",
+    "query": "Can I export the leaderboard as a PDF?",
+    "expected_decision": "escalate",
+    "expected_qc": "CLEAR",
+    "source_doc": null,
+    "notes": "Not in KB — only copying rankings manually is mentioned; PDF export not documented."
+  }
+]
