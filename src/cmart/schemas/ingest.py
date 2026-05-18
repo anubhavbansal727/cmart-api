@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class IngestDocument(BaseModel):
@@ -10,10 +10,23 @@ class IngestDocument(BaseModel):
 
     doc_id: str = Field(..., description="Caller-supplied stable identifier for this document.")
     title: str = Field(..., description="Human-readable document title.")
-    content: str = Field(..., description="Raw document content: plain text, markdown, or HTML.")
-    source_url: str | None = Field(
-        default=None, description="Canonical URL for the source document, if available."
+    content: str | None = Field(
+        default=None, description="Raw document content: plain text, markdown, or HTML."
     )
+    url: str | None = Field(
+        default=None, description="URL to fetch content from. Mutually exclusive with content."
+    )
+    source_url: str | None = Field(
+        default=None, description="Canonical URL for attribution. Defaults to url when url is used."
+    )
+
+    @model_validator(mode="after")
+    def _require_exactly_one_source(self) -> IngestDocument:
+        has_content = bool(self.content and self.content.strip())
+        has_url = bool(self.url and self.url.strip())
+        if has_content == has_url:
+            raise ValueError("Provide either 'content' or 'url', not both and not neither.")
+        return self
 
 
 class IngestRequest(BaseModel):

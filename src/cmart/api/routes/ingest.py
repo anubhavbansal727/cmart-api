@@ -13,6 +13,7 @@ from cmart.schemas.ingest import DeleteResponse, IngestRequest, IngestResponse
 from cmart.services.chunker import DocumentChunker
 from cmart.services.embeddings.openai import OpenAIEmbeddingClient
 from cmart.services.vector_store.pinecone import PineconeVectorStoreClient
+from cmart.services.url_fetcher import fetch_text
 from cmart.utils.errors import NotFoundError
 
 router = APIRouter()
@@ -46,6 +47,14 @@ async def ingest_documents(
 
     for doc in request.documents:
         try:
+            # Step 0 — Resolve content: fetch from URL if content was not provided directly
+            content = doc.content
+            source_url = doc.source_url
+            if doc.url:
+                content = await fetch_text(doc.url)
+                if source_url is None:
+                    source_url = doc.url
+
             # Step 1 — Idempotency: purge any existing vectors for this doc
             existing = await get_by_doc_id(db, doc.doc_id, account.id)
             if existing is not None:
@@ -58,10 +67,10 @@ async def ingest_documents(
 
             # Step 2 — Chunk
             chunks = _chunker.chunk(
-                content=doc.content,
+                content=content,
                 doc_id=doc.doc_id,
                 title=doc.title,
-                source_url=doc.source_url,
+                source_url=source_url,
                 account_id=namespace,
             )
 
@@ -95,7 +104,7 @@ async def ingest_documents(
                 doc_id=doc.doc_id,
                 account_id=account.id,
                 title=doc.title,
-                source_url=doc.source_url,
+                source_url=source_url,
                 chunk_count=len(chunks),
             )
 
