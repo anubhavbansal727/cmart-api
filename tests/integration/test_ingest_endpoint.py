@@ -195,7 +195,12 @@ async def test_ingest_html_document_strips_tags(
 
     mocker.patch(
         "cmart.api.routes.ingest.fetch_text",
-        new=AsyncMock(return_value="Reset Password\n\nGo to Settings and click Reset Password.\n\nYou will receive an email with a reset link valid for 24 hours."),
+        new=AsyncMock(
+            return_value=(
+                "Reset Password\n\nGo to Settings and click Reset Password.\n\n"
+                "You will receive an email with a reset link valid for 24 hours."
+            )
+        ),
     )
 
     response = await client_with_mocks.post(
