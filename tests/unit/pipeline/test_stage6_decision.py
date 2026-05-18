@@ -174,9 +174,9 @@ def test_missing_all_signals_escalates() -> None:
     # No analysis, retrieval, or validation set
     result = stage6_decision.run(ctx)
     assert result.decision_result is not None
-    assert result.decision_result.decision == "escalate"
-    # qc defaults to AMBIGUOUS → short-circuit; rs defaults to WEAK → LOW_RETRIEVAL
-    assert result.decision_result.reason == "LOW_RETRIEVAL"
+    # qc defaults to AMBIGUOUS → short-circuit → CLARIFY (RS=WEAK no longer escalates here)
+    assert result.decision_result.decision == "clarify"
+    assert result.decision_result.reason == "DEFAULT_SAFE"
 
 
 def test_missing_validation_escalates() -> None:
@@ -206,14 +206,14 @@ def test_escalate_retrieval_failure() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_ambiguous_weak_retrieval_escalates() -> None:
-    """QC=AMBIGUOUS + RS=WEAK → ESCALATE via LOW_RETRIEVAL (no GC/SA available)."""
+def test_ambiguous_weak_retrieval_clarifies() -> None:
+    """QC=AMBIGUOUS + RS=WEAK → CLARIFY (weak RS on a vague query is expected; clarify first)."""
     ctx = _ctx(qc=QCSignal.AMBIGUOUS, rs=RSSignal.WEAK)
     ctx.validation = None  # stages 4+5 were skipped
     result = stage6_decision.run(ctx)
     assert result.decision_result is not None
-    assert result.decision_result.decision == "escalate"
-    assert result.decision_result.reason == "LOW_RETRIEVAL"
+    assert result.decision_result.decision == "clarify"
+    assert result.decision_result.reason == "DEFAULT_SAFE"
 
 
 def test_ambiguous_clarification_limit_escalates() -> None:

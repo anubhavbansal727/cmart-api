@@ -33,12 +33,10 @@ def run(ctx: PipelineContext) -> PipelineContext:
         return ctx
 
     # --- Short-circuit when QC != CLEAR ---
-    # No answer was generated, so GC/SA are undefined. Only RS weakness and
-    # clarification limits can escalate; everything else routes to CLARIFY.
+    # No answer was generated, so GC/SA are undefined. Weak retrieval does NOT
+    # escalate here — the query is ambiguous so weak RS is expected and we should
+    # clarify first. Only the clarification limit forces escalation.
     if qc != QCSignal.CLEAR:
-        if rs == RSSignal.WEAK:
-            ctx.decision_result = DecisionResult(decision="escalate", reason="LOW_RETRIEVAL")
-            return ctx
         if ctx.clarify_rounds >= settings.max_clarify_rounds:
             ctx.decision_result = DecisionResult(
                 decision="escalate", reason="CLARIFICATION_LIMIT_REACHED"
