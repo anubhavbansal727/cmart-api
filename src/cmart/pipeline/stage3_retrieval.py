@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # Stage 3: Retrieval — embeds the query and searches Pinecone for the top-5 KB chunks.
-# Sets the Retrieval Strength (RS) signal: STRONG (>0.80), MODERATE (0.65–0.80), WEAK (<0.65).
+# Sets the Retrieval Strength (RS) signal: STRONG (>=0.65), MODERATE (0.50–0.65), WEAK (<0.50).
 # RS is based on the top document score only, not an average.
 # On failure → RS=WEAK + retrieval_failed=True, which forces ESCALATE in the Decision Engine.
 import time

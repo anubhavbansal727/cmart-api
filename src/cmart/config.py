@@ -39,8 +39,8 @@ class Settings(BaseSettings):
     api_port: int = 8000
 
     # Retrieval thresholds — tunable without code changes
-    rs_strong_threshold: float = 0.82
-    rs_moderate_threshold: float = 0.65
+    rs_strong_threshold: float = 0.65
+    rs_moderate_threshold: float = 0.50
 
     # Session config
     session_ttl_seconds: int = 1800
