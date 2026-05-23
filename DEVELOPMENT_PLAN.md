@@ -336,7 +336,7 @@ Sliding window: key = `rate:{account_id}:{window_minute}`, TTL = 2 minutes. 100 
 - `Dockerfile` fixed: 3-stage build — deps cached separately from app code; `cmart` package properly installed into venv via hatchling; `$PORT` env var support for Railway
 - `railway.toml`: health check path, restart policy
 - `tests/load/locustfile.py`: Locust load test targeting 100 req/min
-- Deployed to Railway: `https://cmart-api-production.up.railway.app`
+- Deployed to Railway (production)
 
 **Phase 3 exit criteria: MET.** End-to-end pipeline works for all 3 decision paths. Session clarification correctly escalates after 2 rounds. Deployed and accessible via HTTPS.
 
@@ -438,7 +438,7 @@ curl -X POST /query -H "Authorization: Bearer test_key" \
 
 **Phase 4:**
 ```bash
-uv run python scripts/run_evals.py --host https://cmart-api-production.up.railway.app --api-key <key>
+uv run python scripts/run_evals.py --host <railway-url> --api-key <key>
 # Per-case: expected vs actual decision, all 4 signals, reason code, latency, pass/fail
 # Summary: pass rate, avg latency, error count. Exit 1 on any failure (CI-compatible).
 ```
