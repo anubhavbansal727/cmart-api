@@ -27,10 +27,11 @@ Query → Analysis → Retrieval → Generation → Validation → Decision → 
 | Decision | Condition | Reason Code |
 |---|---|---|
 | `ANSWER` | RS=STRONG + GC=FULLY_SUPPORTED + QC=CLEAR + SA=AGREES | `HIGH_CONFIDENCE` |
-| `CLARIFY` | QC=AMBIGUOUS or INCOMPLETE, or GC=PARTIALLY_SUPPORTED | `DEFAULT_SAFE` |
+| `ANSWER` | RS=MODERATE + GC=FULLY_SUPPORTED + QC=CLEAR + SA=AGREES | `MODERATE_CONFIDENCE` |
+| `CLARIFY` | QC=AMBIGUOUS or INCOMPLETE, or GC=PARTIALLY_SUPPORTED, or SA=PARTIAL | `DEFAULT_SAFE` |
 | `ESCALATE` | GC=NOT_SUPPORTED | `LOW_GROUNDING` |
 | `ESCALATE` | SA=CONFLICT | `SOURCE_CONFLICT` |
-| `ESCALATE` | RS=WEAK | `LOW_RETRIEVAL` |
+| `ESCALATE` | RS=WEAK (QC=CLEAR path only) | `LOW_RETRIEVAL` |
 | `ESCALATE` | Clarification rounds ≥ 2 | `CLARIFICATION_LIMIT_REACHED` |
 | `ESCALATE` | Pinecone exception | `RETRIEVAL_FAILURE` |
 
@@ -205,8 +206,8 @@ PINECONE_VECTOR_DIM=1536
 DATABASE_URL=postgresql+asyncpg://cmart:cmart@localhost:5432/cmart
 REDIS_URL=redis://localhost:6379
 
-# Retrieval thresholds (tuned for text-embedding-3-small + Pinecone cosine)
-RS_STRONG_THRESHOLD=0.60
+# Retrieval thresholds (tuned for text-embedding-3-large + Pinecone cosine)
+RS_STRONG_THRESHOLD=0.65
 RS_MODERATE_THRESHOLD=0.45
 
 # Session
@@ -230,6 +231,9 @@ uv run mypy src/
 
 # Lint
 uv run ruff check src/ tests/
+
+# Run evals against a live deployment
+uv run python scripts/run_evals.py --host https://<host> --api-key <key>
 
 # Load test (against staging)
 uv run locust -f tests/load/locustfile.py --host https://<host>
@@ -260,6 +264,7 @@ tests/
 
 scripts/
 ├── create_account.py           # Provision API key
+├── run_evals.py                # Eval runner — compares live API decisions against golden dataset
 └── test_namespace_isolation.py # Verify per-account Pinecone namespace isolation
 ```
 
@@ -282,7 +287,7 @@ Set all env vars in Railway dashboard. Override RS thresholds to match your embe
 
 | Signal | Values |
 |---|---|
-| **Retrieval Strength (RS)** | `STRONG` (≥0.60), `MODERATE` (0.45–0.60), `WEAK` (<0.45) |
+| **Retrieval Strength (RS)** | `STRONG` (≥0.65), `MODERATE` (0.45–0.65), `WEAK` (<0.45) |
 | **Grounding Check (GC)** | `FULLY_SUPPORTED`, `PARTIALLY_SUPPORTED`, `NOT_SUPPORTED` |
 | **Query Clarity (QC)** | `CLEAR`, `AMBIGUOUS`, `INCOMPLETE` |
 | **Source Agreement (SA)** | `AGREES`, `PARTIAL`, `CONFLICT` |
