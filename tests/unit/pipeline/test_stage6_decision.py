@@ -138,9 +138,24 @@ def test_clarify_incomplete_query() -> None:
     assert result.decision_result.decision == "clarify"
 
 
-def test_clarify_moderate_retrieval() -> None:
+def test_answer_moderate_confidence() -> None:
+    """RS=MODERATE with perfect GC and SA qualifies for ANSWER at MODERATE_CONFIDENCE."""
     ctx = _ctx(
         rs=RSSignal.MODERATE, gc=GCSignal.FULLY_SUPPORTED, sa=SASignal.AGREES, qc=QCSignal.CLEAR
+    )
+    result = stage6_decision.run(ctx)
+    assert result.decision_result is not None
+    assert result.decision_result.decision == "answer"
+    assert result.decision_result.reason == "MODERATE_CONFIDENCE"
+
+
+def test_clarify_moderate_partial_grounding() -> None:
+    """RS=MODERATE + GC=PARTIALLY_SUPPORTED still CLARIFYs — validation is not at max."""
+    ctx = _ctx(
+        rs=RSSignal.MODERATE,
+        gc=GCSignal.PARTIALLY_SUPPORTED,
+        sa=SASignal.AGREES,
+        qc=QCSignal.CLEAR,
     )
     result = stage6_decision.run(ctx)
     assert result.decision_result is not None

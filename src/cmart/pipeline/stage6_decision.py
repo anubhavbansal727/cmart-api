@@ -68,13 +68,16 @@ def run(ctx: PipelineContext) -> PipelineContext:
         return ctx
 
     # --- Priority 2: ANSWER ---
+    # RS=STRONG is ideal; RS=MODERATE is acceptable when GC and SA are both at max,
+    # because the validation layer has already confirmed grounding and source agreement.
     if (
-        rs == RSSignal.STRONG
+        rs in (RSSignal.STRONG, RSSignal.MODERATE)
         and gc == GCSignal.FULLY_SUPPORTED
         and qc == QCSignal.CLEAR
         and sa == SASignal.AGREES
     ):
-        ctx.decision_result = DecisionResult(decision="answer", reason="HIGH_CONFIDENCE")
+        reason = "HIGH_CONFIDENCE" if rs == RSSignal.STRONG else "MODERATE_CONFIDENCE"
+        ctx.decision_result = DecisionResult(decision="answer", reason=reason)
         return ctx
 
     # --- Priority 3: CLARIFY (default safe) ---
