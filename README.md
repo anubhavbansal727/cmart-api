@@ -4,6 +4,45 @@
 
 ---
 
+## Architecture
+
+```mermaid
+flowchart TD
+    Client(["Client"])
+    API["API Service\nPOST /query · auth middleware"]
+
+    subgraph pipeline ["7-Stage Pipeline"]
+        S1["1 · Intake\nvalidate · session resolve"]
+        S2["2 · Analysis\nLLM → QC signal"]
+        S3["3 · Retrieval\nPinecone top-k → RS signal"]
+        S4["4 · Generation\nLLM → grounded answer"]
+        S5["5 · Validation\nLLM → GC + SA signals"]
+        S6["6 · Decision Engine\nrule-based · no ML"]
+        S1 --> S2
+        S2 -->|"QC = CLEAR"| S3
+        S3 --> S4
+        S4 --> S5
+        S5 --> S6
+        S2 -->|"QC = AMBIGUOUS\nor INCOMPLETE"| S6
+    end
+
+    Client -->|"Bearer token"| API
+    API --> S1
+
+    S6 -->|"ANSWER"| A["answer\n+ sources + reason code"]
+    S6 -->|"CLARIFY"| C["clarify\n+ question + session_id"]
+    S6 -->|"ESCALATE"| E["escalate\n+ signals + context"]
+
+    S2 -.->|"prompt calls"| LLM[("Gemini\nFlash 2.5")]
+    S4 -.->|"prompt calls"| LLM
+    S5 -.->|"prompt calls"| LLM
+    S3 -.->|"vector search"| PIN[("Pinecone")]
+    S1 -.->|"session TTL=30m"| RED[("Redis")]
+    S6 -.->|"query log"| PG[("PostgreSQL")]
+```
+
+---
+
 ## How It Works
 
 Every query runs a 7-stage pipeline:
